@@ -11,6 +11,10 @@ import (
 type CakeRepositoryImpl struct {
 }
 
+func NewCakeRepository() CakeRepository {
+	return &CakeRepositoryImpl{}
+}
+
 func (repository *CakeRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, cake domain.Cake) domain.Cake {
 	query := "INSERT INTO cakes (title, description, rating, image) values (?, ?, ?, ?)"
 
@@ -26,10 +30,10 @@ func (repository *CakeRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, cake
 
 func (repository *CakeRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, cake domain.Cake) domain.Cake {
 	query := `UPDATE cakes SET 
-							title = ? 
-							description = ? 
-							rating = ? 
-							image = ?
+							title = ? ,
+							description = ? ,
+							rating = ? ,
+							image = ? 
 						WHERE id = ?`
 	_, err := tx.ExecContext(ctx, query, cake.Title, cake.Description, cake.Rating, cake.Image, cake.Id)
 	helper.PanicIfError(err)
@@ -44,9 +48,10 @@ func (repository *CakeRepositoryImpl) Delete(ctx context.Context, tx *sql.Tx, ca
 }
 
 func (repository *CakeRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, cakeId int) (domain.Cake, error) {
-	query := "SELECT id, title, description, rating, image, created_at, updated_at WHERE id = ?"
+	query := "SELECT id, title, description, rating, image, created_at, updated_at FROM cakes WHERE id = ? AND deleted_at IS NULL"
 	rows, err := tx.QueryContext(ctx, query, cakeId)
 	helper.PanicIfError(err)
+	defer rows.Close()
 
 	cake := domain.Cake{}
 	if rows.Next() {
@@ -59,9 +64,10 @@ func (repository *CakeRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, 
 }
 
 func (repository *CakeRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.Cake {
-	query := "SELECT id, title, description, rating, image, created_at, updated_at FROM cakes"
+	query := "SELECT id, title, description, rating, image, created_at, updated_at FROM cakes WHERE deleted_at IS NULL"
 	rows, err := tx.QueryContext(ctx, query)
 	helper.PanicIfError(err)
+	defer rows.Close()
 
 	var cakes []domain.Cake
 	for rows.Next() {

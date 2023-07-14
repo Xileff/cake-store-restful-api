@@ -17,6 +17,14 @@ type CakeServiceImpl struct {
 	Validate       *validator.Validate
 }
 
+func NewCakeService(cakeRepository repository.CakeRepository, DB *sql.DB, validate *validator.Validate) CakeService {
+	return &CakeServiceImpl{
+		CakeRepository: cakeRepository,
+		DB:             DB,
+		Validate:       validate,
+	}
+}
+
 func (service *CakeServiceImpl) Create(ctx context.Context, request web.CakeCreateRequest) web.CakeResponse {
 	err := service.Validate.Struct(request)
 	helper.PanicIfError(err)
