@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"felixsavero/cake-store-restful-api/exception"
 	"felixsavero/cake-store-restful-api/helper"
 	"felixsavero/cake-store-restful-api/model/domain"
 	"felixsavero/cake-store-restful-api/model/web"
@@ -54,7 +55,9 @@ func (service *CakeServiceImpl) Update(ctx context.Context, request web.CakeUpda
 	defer helper.CommitOrRollback(tx)
 
 	cake, err := service.CakeRepository.FindById(ctx, tx, request.Id)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	cake.Title = request.Title
 	cake.Description = request.Description
@@ -72,7 +75,9 @@ func (service *CakeServiceImpl) Delete(ctx context.Context, cakeId int) {
 	defer helper.CommitOrRollback(tx)
 
 	cake, err := service.CakeRepository.FindById(ctx, tx, cakeId)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	service.CakeRepository.Delete(ctx, tx, cake)
 }
@@ -83,7 +88,9 @@ func (service *CakeServiceImpl) FindById(ctx context.Context, cakeId int) web.Ca
 	defer helper.CommitOrRollback(tx)
 
 	cake, err := service.CakeRepository.FindById(ctx, tx, cakeId)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	return helper.ToCakeResponse(cake)
 }

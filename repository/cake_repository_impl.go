@@ -29,11 +29,11 @@ func (repository *CakeRepositoryImpl) Save(ctx context.Context, tx *sql.Tx, cake
 }
 
 func (repository *CakeRepositoryImpl) Update(ctx context.Context, tx *sql.Tx, cake domain.Cake) domain.Cake {
-	query := `UPDATE cakes SET 
-							title = ? ,
+	query := `UPDATE cakes SET title = ? ,
 							description = ? ,
 							rating = ? ,
-							image = ? 
+							image = ? ,
+							updated_at = current_timestamp
 						WHERE id = ?`
 	_, err := tx.ExecContext(ctx, query, cake.Title, cake.Description, cake.Rating, cake.Image, cake.Id)
 	helper.PanicIfError(err)
@@ -64,7 +64,7 @@ func (repository *CakeRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, 
 }
 
 func (repository *CakeRepositoryImpl) FindAll(ctx context.Context, tx *sql.Tx) []domain.Cake {
-	query := "SELECT id, title, description, rating, image, created_at, updated_at FROM cakes WHERE deleted_at IS NULL"
+	query := "SELECT id, title, description, rating, image, created_at, updated_at FROM cakes WHERE deleted_at IS NULL ORDER BY rating DESC, title ASC"
 	rows, err := tx.QueryContext(ctx, query)
 	helper.PanicIfError(err)
 	defer rows.Close()

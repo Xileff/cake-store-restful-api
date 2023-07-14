@@ -25,13 +25,12 @@ func (controller *CakeControllerImpl) Create(writer http.ResponseWriter, request
 	helper.ReadFromRequestBody(request, &cakeCreateRequest)
 
 	cakeResponse := controller.CakeService.Create(request.Context(), cakeCreateRequest)
-	webResponse := web.WebResponse{
-		Code:   201,
-		Status: "OK",
+	response := web.DataResponse{
+		Status: "success",
 		Data:   cakeResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, response, http.StatusCreated)
 }
 
 func (controller *CakeControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -45,13 +44,12 @@ func (controller *CakeControllerImpl) Update(writer http.ResponseWriter, request
 	cakeUpdateRequest.Id = id
 
 	cakeResponse := controller.CakeService.Update(request.Context(), cakeUpdateRequest)
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
+	response := web.DataResponse{
+		Status: "success",
 		Data:   cakeResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, response, http.StatusOK)
 }
 
 func (controller *CakeControllerImpl) Delete(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -60,12 +58,12 @@ func (controller *CakeControllerImpl) Delete(writer http.ResponseWriter, request
 	helper.PanicIfError(err)
 
 	controller.CakeService.Delete(request.Context(), id)
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
+	response := web.MessageResponse{
+		Status:  "success",
+		Message: "Cake " + strconv.Itoa(id) + " deleted successfully.",
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, response, http.StatusOK)
 }
 
 func (controller *CakeControllerImpl) FindById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -74,22 +72,20 @@ func (controller *CakeControllerImpl) FindById(writer http.ResponseWriter, reque
 	helper.PanicIfError(err)
 
 	cakeResponse := controller.CakeService.FindById(request.Context(), id)
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
+	response := web.DataResponse{
+		Status: "success",
 		Data:   cakeResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, response, http.StatusOK)
 }
 
 func (controller *CakeControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	cakesResponse := controller.CakeService.FindAll(request.Context())
-	webResponse := web.WebResponse{
-		Code:   200,
-		Status: "OK",
+	response := web.DataResponse{
+		Status: "success",
 		Data:   cakesResponse,
 	}
 
-	helper.WriteToResponseBody(writer, webResponse)
+	helper.WriteToResponseBody(writer, response, http.StatusOK)
 }

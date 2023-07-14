@@ -3,6 +3,7 @@ package main
 import (
 	"felixsavero/cake-store-restful-api/app"
 	"felixsavero/cake-store-restful-api/controller"
+	"felixsavero/cake-store-restful-api/exception"
 	"felixsavero/cake-store-restful-api/helper"
 	"felixsavero/cake-store-restful-api/repository"
 	"felixsavero/cake-store-restful-api/service"
@@ -29,6 +30,8 @@ func main() {
 	router.POST("/cakes", cakeController.Create)
 	router.PUT("/cakes/:id", cakeController.Update)
 	router.DELETE("/cakes/:id", cakeController.Delete)
+
+	router.PanicHandler = exception.ErrorHandler
 
 	server := http.Server{
 		Addr:    "localhost:5000",
