@@ -18,13 +18,23 @@ import (
 	"testing"
 	"time"
 
+	"os"
+
 	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 )
 
 func setupTestDB() *sql.DB {
-	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/cake_store_restful_api_test")
+	err := godotenv.Load("../.env")
+	helper.PanicIfError(err)
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("DB_USER")
+	dbPass := os.Getenv("DB_PASS")
+	db, err := sql.Open("mysql", dbUser+":"+dbPass+"@tcp("+dbHost+":"+dbPort+")/cake_store_restful_api_test")
+
 	helper.PanicIfError(err)
 
 	db.SetMaxIdleConns(10)
