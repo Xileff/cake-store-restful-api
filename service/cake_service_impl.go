@@ -8,6 +8,7 @@ import (
 	"felixsavero/cake-store-restful-api/model/domain"
 	"felixsavero/cake-store-restful-api/model/web"
 	"felixsavero/cake-store-restful-api/repository"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -39,6 +40,8 @@ func (service *CakeServiceImpl) Create(ctx context.Context, request web.CakeCrea
 		Description: request.Description,
 		Rating:      request.Rating,
 		Image:       request.Image,
+		CreatedAt:   time.Now().Format("2006-01-02 15:04:05"),
+		UpdatedAt:   time.Now().Format("2006-01-02 15:04:05"),
 	}
 
 	cake = service.CakeRepository.Save(ctx, tx, cake)
